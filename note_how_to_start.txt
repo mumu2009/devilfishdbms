@@ -1,0 +1,178 @@
+1. 准备 Node.js 运行时
+下载 Node.js 运行时：从 Node.js 官方网站 下载适用于目标操作系统的 Node.js 运行时（例如，Windows 的 .zip 文件）。
+解压 Node.js 运行时：将下载的 Node.js 运行时解压到一个目录中，例如 nodejs。
+2. 组织项目结构
+创建项目目录：创建一个新的项目目录，例如 Devilfish-DBMS。
+添加 Node.js 运行时：将解压后的 Node.js 运行时目录（例如 nodejs）复制到项目目录中。
+添加应用程序代码：将您的应用程序代码（例如 main.js 及其依赖项）复制到项目目录中。
+创建启动脚本：编写一个启动脚本，用于解压 Node.js 运行时并启动应用程序。
+3. 编写启动脚本
+Windows 启动脚本：创建一个批处理文件（例如 start.bat），用于解压 Node.js 运行时并启动应用程序。
+
+bat
+@echo off
+setlocal
+
+REM 设置项目目录
+set PROJECT_DIR=%~dp0
+
+REM 设置 Node.js 目录
+set NODEJS_DIR=%PROJECT_DIR%nodejs
+
+REM 检查 Node.js 目录是否存在
+if exist "%NODEJS_DIR%" (
+    echo Node.js already extracted.
+) else (
+    echo Extracting Node.js...
+    REM 解压 Node.js 运行时（假设 Node.js 运行时在 nodejs.zip 中）
+    powershell -Command "Expand-Archive -Path '%PROJECT_DIR%nodejs.zip' -DestinationPath '%PROJECT_DIR%nodejs'"
+)
+
+REM 设置 Node.js 可执行文件路径
+set NODE_EXE=%NODEJS_DIR%\node.exe
+
+REM 启动应用程序
+echo Starting Devilfish DBMS...
+%NODE_EXE% %PROJECT_DIR%main.js
+
+endlocal
+Linux 启动脚本：创建一个 shell 脚本（例如 start.sh），用于解压 Node.js 运行时并启动应用程序。
+
+sh
+#!/bin/bash
+
+# 设置项目目录
+PROJECT_DIR=$(dirname "$(readlink -f "$0")")
+
+# 设置 Node.js 目录
+NODEJS_DIR="$PROJECT_DIR/nodejs"
+
+# 检查 Node.js 目录是否存在
+if [ -d "$NODEJS_DIR" ]; then
+    echo "Node.js already extracted."
+else
+    echo "Extracting Node.js..."
+    # 解压 Node.js 运行时（假设 Node.js 运行时在 nodejs.zip 中）
+    unzip "$PROJECT_DIR/nodejs.zip" -d "$PROJECT_DIR/nodejs"
+fi
+
+# 设置 Node.js 可执行文件路径
+NODE_EXE="$NODEJS_DIR/node"
+
+# 启动应用程序
+echo "Starting Devilfish DBMS..."
+$NODE_EXE "$PROJECT_DIR/main.js"
+4. 打包项目
+压缩项目目录：将项目目录（包括 Node.js 运行时、应用程序代码和启动脚本）压缩为一个 .zip 文件。
+sh
+zip -r Devilfish-DBMS.zip Devilfish-DBMS
+5. 分发和使用
+分发：将生成的 .zip 文件分发给用户。
+解压和运行：用户解压 .zip 文件后，运行相应的启动脚本（例如 start.bat 或 start.sh）。
+6. 示例项目结构
+Devilfish-DBMS/
+├── nodejs/          # Node.js 运行时目录
+├── main.js          # 您的应用程序主文件
+├── package.json     # 依赖项配置文件
+├── start.bat        # Windows 启动脚本
+├── start.sh         # Linux 启动脚本
+└── nodejs.zip       # Node.js 运行时压缩文件
+7. 注意事项
+依赖项管理：确保您的 package.json 文件中列出了所有依赖项，并且在启动应用程序之前安装这些依赖项。可以在启动脚本中添加 npm install 命令来安装依赖项。
+
+bat
+REM 安装依赖项
+if not exist "%PROJECT_DIR%node_modules" (
+    echo Installing dependencies...
+    %NODEJS_DIR%\npm install --prefix %PROJECT_DIR%
+)
+sh
+# 安装依赖项
+if [ ! -d "$PROJECT_DIR/node_modules" ]; then
+    echo "Installing dependencies..."
+    $NODEJS_DIR/npm install --prefix $PROJECT_DIR
+fi
+权限问题：确保启动脚本具有可执行权限。在 Linux 上，可以使用以下命令设置权限：
+
+sh
+chmod +x start.sh
+8. 完整示例
+项目目录结构：
+
+Devilfish-DBMS/
+├── nodejs/          # Node.js 运行时目录
+├── main.js          # 您的应用程序主文件
+├── package.json     # 依赖项配置文件
+├── start.bat        # Windows 启动脚本
+├── start.sh         # Linux 启动脚本
+└── nodejs.zip       # Node.js 运行时压缩文件
+start.bat 内容：
+
+bat
+@echo off
+setlocal
+
+REM 设置项目目录
+set PROJECT_DIR=%~dp0
+
+REM 设置 Node.js 目录
+set NODEJS_DIR=%PROJECT_DIR%nodejs
+
+REM 检查 Node.js 目录是否存在
+if exist "%NODEJS_DIR%" (
+    echo Node.js already extracted.
+) else (
+    echo Extracting Node.js...
+    REM 解压 Node.js 运行时（假设 Node.js 运行时在 nodejs.zip 中）
+    powershell -Command "Expand-Archive -Path '%PROJECT_DIR%nodejs.zip' -DestinationPath '%PROJECT_DIR%nodejs'"
+)
+
+REM 安装依赖项
+if not exist "%PROJECT_DIR%node_modules" (
+    echo Installing dependencies...
+    %NODEJS_DIR%\npm install --prefix %PROJECT_DIR%
+)
+
+REM 设置 Node.js 可执行文件路径
+set NODE_EXE=%NODEJS_DIR%\node.exe
+
+REM 启动应用程序
+echo Starting Devilfish DBMS...
+%NODE_EXE% %PROJECT_DIR%main.js
+
+endlocal
+start.sh 内容：
+
+sh
+#!/bin/bash
+
+# 设置项目目录
+PROJECT_DIR=$(dirname "$(readlink -f "$0")")
+
+# 设置 Node.js 目录
+NODEJS_DIR="$PROJECT_DIR/nodejs"
+
+# 检查 Node.js 目录是否存在
+if [ -d "$NODEJS_DIR" ]; then
+    echo "Node.js already extracted."
+else
+    echo "Extracting Node.js..."
+    # 解压 Node.js 运行时（假设 Node.js 运行时在 nodejs.zip 中）
+    unzip "$PROJECT_DIR/nodejs.zip" -d "$PROJECT_DIR/nodejs"
+fi
+
+# 安装依赖项
+if [ ! -d "$PROJECT_DIR/node_modules" ]; then
+    echo "Installing dependencies..."
+    $NODEJS_DIR/npm install --prefix $PROJECT_DIR
+fi
+
+# 设置 Node.js 可执行文件路径
+NODE_EXE="$NODEJS_DIR/node"
+
+# 启动应用程序
+echo "Starting Devilfish DBMS..."
+$NODE_EXE "$PROJECT_DIR/main.js"
+9. 验证
+解压和运行：用户解压 .zip 文件后，运行相应的启动脚本（例如 start.bat 或 start.sh），确保应用程序能够正确启动并找到数据库文件。
+通过这种方式，您可以确保您的应用程序及其依赖项在任何环境中都能正确运行，而不需要用户手动安装 Node.js。这种方法不仅简化了部署过程，还提高了应用程序的可移植性。
